@@ -1,27 +1,15 @@
 module.exports = {
-  // 获取当前运行环境
-  getEnv() {
-    let NODE_ENV = 'pro';
+  // 获取当前环境对应的域名
+  getHost(env) {
+    // 测试环境
+    let host = 'http://staging.merchant-mobile.sdpay.mipay.com';
 
-    // 尝试读取某个非线上存在的文件
-    // 若读取成功，则为dev环境
-    try {
-      const fileManager = wx.getFileSystemManager();
-      fileManager.accessSync('../mocker.js');
-      NODE_ENV = 'dev';
-    } catch (e) {}
-
-    return NODE_ENV;
-  },
-  // 获取api请求host
-  getHost() {
-    let host = '';
-    const NODE_ENV = this.getEnv();
-
-    if (NODE_ENV === 'pro') {
-      host = 'https://mi.com';
-    } else {
-      host = 'http://localhost';
+    // 本地开发
+    if (env === 'dev') {
+      host = 'http://localhost:8089'
+    } else if (env === 'prod') {
+      // 线上生产
+      host = 'https://merchant-mobile.sdpay.mipay.com';
     }
 
     return host;
@@ -41,5 +29,23 @@ module.exports = {
   formatNumber(n) {
     n = n.toString();
     return n[1] ? n : '0' + n;
-  }
+  },
+  // 将对象的键值对变成 key = val的形式
+  obj2KeyVal(obj, withEncode = true) {
+    let res = '';
+    // getOwnPropertyNames 获取到的key有顺序之分
+    Object.getOwnPropertyNames(obj).forEach((key) => {
+      // 是否对val进行转码
+      if (withEncode) {
+        // encodeURIComponent 必要！用于对特殊字符 如+、空格等编码
+        res += `${key}=${encodeURIComponent(obj[key])}&`;
+      } else {
+        res += `${key}=${obj[key]}&`;
+      }
+    });
+
+    res = res.slice(0, -1);
+
+    return res;
+  },
 };

@@ -1,6 +1,4 @@
-const
-    domain = 'http://mi.com:8089',
-    errMsg = '服务器异常，请稍后重试';
+const errMsg = '服务器异常，请稍后重试';
 
 module.exports = {
     fetch: function ({
@@ -11,9 +9,20 @@ module.exports = {
         method,
         options = {}
     }) {
+        // 设置POST默认Content-Type
+        if (method.toUpperCase() === 'POST') {
+            options.header = Object.assign({
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }, options.header);
+        }
+
         return new Promise((resolve, reject) => {
+            if(loading) {
+                wx.showLoading();
+            }
+
             wx.request({
-                url: `${domain}${url}`, // 请求地址
+                url, // 请求地址
                 data, // 请求参数
                 method: method || 'GET', // 请求方式，默认GET
                 // header参数

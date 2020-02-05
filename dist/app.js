@@ -1,13 +1,15 @@
 //app.js
 const
-  apiConfig = require('./api/apiConfig'),
-  util = require('./utils/util.js');
+  env = 'dev', // 此处NODE_ENV将根据具体环境被替换为对应的字符串，详见gulpfile
+  api = require('./utils/api'),
+  util = require('./utils/util');
+
 
 App({
-  get: apiConfig.fetch,
+  get: api.fetch,
   post: params => {
     params.method = 'POST';
-    return apiConfig.fetch(params);
+    return api.fetch(params);
   },
   onLaunch: function () {
     // 展示本地存储能力
@@ -43,8 +45,8 @@ App({
     })
   },
   globalData: {
-    env: util.getEnv(),
-    host: util.getHost(),
+    env,
+    host: util.getHost(env),
     userInfo: null
   }
 })

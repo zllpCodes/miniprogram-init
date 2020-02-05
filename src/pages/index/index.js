@@ -3,9 +3,9 @@
 const app = getApp()
 
 app.post({
-  url: '/skb/getUserStatus',
+  url: `${app.globalData.host}/skb/getUserStatus`,
   data: {
-    userId: '12345'
+    userNo: 1234,
   }
 }).then(res => {
   console.log(res);
@@ -27,8 +27,6 @@ Page({
     })
   },
   onLoad: function () {
-    console.log(app.globalData);
-
     if (app.globalData.userInfo) {
       this.setData({
         userInfo: app.globalData.userInfo,

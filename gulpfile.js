@@ -7,6 +7,7 @@ const
     autoprefixer = require('autoprefixer'),
     rename = require('gulp-rename'),
     changed = require('gulp-changed'),
+    clean = require('gulp-clean'),
     mocker = require('./mocker.js'),
     webserver = require('gulp-webserver');
 
@@ -42,6 +43,16 @@ gulp.task('compile:files', function () {
         .pipe(gulp.dest('dist'));
 });
 
+
+// 清除dist文件夹，打包最新代码
+gulp.task('clean', function () {
+    gulp.src('dist/', {
+            read: false
+        })
+        .pipe(clean())
+});
+
+// 本地开发
 // 本地静态资源服务
 gulp.task('webserver', function () {
     return gulp.src('.')
@@ -71,7 +82,34 @@ gulp.task('webserver', function () {
         }));
 });
 
-// 监听任务
-gulp.task('dev', ['compile:scss', 'compile:files', 'webserver'], function () {
+gulp.task('compile:dev', function () {
+    gulp.src('src/app.js')
+        .pipe(replace(/NODE_ENV/, 'dev'))
+        .pipe(gulp.dest('dist'));
+});
+
+gulp.task('dev', ['compile:dev', 'webserver'], function () {
     gulp.watch('src/**', ['compile:scss', 'compile:files']);
 });
+
+
+// 测试环境
+gulp.task('compile:stag', function () {
+    gulp.src('src/app.js')
+        .pipe(replace(/NODE_ENV/, 'stag'))
+        .pipe(gulp.dest('dist'));
+});
+
+gulp.task('stag', ['compile:stag'], function () {
+    gulp.watch('src/**', ['compile:scss', 'compile:files']);
+});
+
+
+// 线上生产
+gulp.task('compile:prod', function () {
+    gulp.src('src/app.js')
+        .pipe(replace(/NODE_ENV/, 'prod'))
+        .pipe(gulp.dest('dist'));
+});
+
+gulp.task('prod', ['compile:prod', 'compile:scss', 'compile:files'])
